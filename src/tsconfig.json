@@ -1,0 +1,25 @@
+{
+	"extends": "../tsconfig.base.json",
+	"compilerOptions": {
+		"paths": {
+			"@/*": [
+				"src/*"
+			]
+		},
+		"lib": [
+			"ES2021",
+			"DOM"
+		],
+		"types": [
+			"node"
+		],
+	},
+	"include": [
+		"./**/*.ts"
+	],
+	"exclude": [
+		"node_modules",
+		"examples/**/*.ts",
+		"test"
+	]
+}

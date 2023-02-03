@@ -1,0 +1,27 @@
+{
+	"extends": "../tsconfig.base.json",
+	"compilerOptions": {
+		"paths": {
+			"@/*": [
+				"test/*"
+			]
+		},
+		"lib": [
+			"ESNext",
+		],
+		"types": [
+			"node",
+			"mocha",
+			"chai",
+			"chai-as-promised",
+		],
+	},
+	"include": [
+		"./**/*.ts",
+	],
+	"exclude": [
+		"node_modules",
+		"examples/**/*.ts",
+		"src"
+	]
+}
