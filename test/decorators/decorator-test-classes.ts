@@ -2,10 +2,10 @@ import { TokenBucket } from '../../src/core/token-bucket';
 import { Duration } from 'unitsnet-js';
 import { RateLimit } from '../../src/decorators/rate-limit';
 
-const syncNonRefundingBucket = new TokenBucket({ maxTokens: 20 });
+const syncNonRefundingBucket = new TokenBucket({ capacity: 20 });
 
 const syncRefundingBucket = new TokenBucket({
-	maxTokens: 20,
+	capacity: 20,
 	behavior: {
 		refund: {
 			enabled: true,

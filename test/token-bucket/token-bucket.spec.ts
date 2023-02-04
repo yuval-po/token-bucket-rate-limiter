@@ -17,7 +17,7 @@ describe('TokenBucket - Construction', () => {
 
 	it('Does not throw when created with the most minimal configuration', () => {
 		const config: TokenBucketConfig = {
-			maxTokens: 100,
+			capacity: 100,
 		}
 
 		expect(() => new TokenBucket(config).dispose()).to.not.throw();
@@ -26,7 +26,7 @@ describe('TokenBucket - Construction', () => {
 	it('Does not throw when created with a standard configuration', () => {
 		const config: TokenBucketConfig = {
 			bucketName: "Bucket for test 'Does not throw when created with a standard configuration'",
-			maxTokens: 100,
+			capacity: 100,
 			behavior: {
 				refund: {
 					enabled: true,
@@ -46,7 +46,7 @@ describe('TokenBucket - Construction', () => {
 	it('Does not throw when created with a full configuration', () => {
 		const config: TokenBucketConfig = {
 			bucketName: "Bucket for test 'Does not throw when created with a full configuration'",
-			maxTokens: 100,
+			capacity: 100,
 			behavior: {
 				refund: {
 					enabled: true,
@@ -70,19 +70,19 @@ describe('TokenBucket - Construction', () => {
 
 describe('TokenBucket - Destruction', () => {
 	it("Calling 'dispose' does not throw", () => {
-		const bucket = new TokenBucket({ maxTokens: 100 });
+		const bucket = new TokenBucket({ capacity: 100 });
 		expect(() => bucket.dispose()).to.not.throw;
 	});
 
 	it("Calling 'dispose' updates the 'isDisposed' property", () => {
-		const bucket = new TokenBucket({ maxTokens: 100 });
+		const bucket = new TokenBucket({ capacity: 100 });
 		expect(bucket.isDisposed).to.be.false;
 		bucket.dispose();
 		expect(bucket.isDisposed).to.be.true;
 	});
 
 	it("Does not throw when calling 'dispose' more than once", () => {
-		const bucket = new TokenBucket({ maxTokens: 100 });
+		const bucket = new TokenBucket({ capacity: 100 });
 		bucket.dispose();
 		expect(bucket.dispose()).to.not.throw;
 	});
@@ -90,22 +90,25 @@ describe('TokenBucket - Destruction', () => {
 
 describe('TokenBucket - Accessors', () => {
 	it("Properly handles 'name' property access", () => {
-		let bucket = new TokenBucket({ maxTokens: 100 });
+		let bucket = new TokenBucket({ capacity: 100 });
+
+		expect(bucket.capacity).to.equal(100);
+
 		expect(bucket.name).to.be.undefined;
 		bucket.dispose();
 
-		bucket = new TokenBucket({ maxTokens: 100, bucketName: 'TEST_NAME' });
+		bucket = new TokenBucket({ capacity: 100, bucketName: 'TEST_NAME' });
 		expect(bucket.name).to.equal('TEST_NAME');
 		bucket.dispose();
 	});
 
 	it("Properly handles 'isRefundEnabled' property access", () => {
-		let bucket = new TokenBucket({ maxTokens: 100 });
+		let bucket = new TokenBucket({ capacity: 100 });
 		expect(bucket.isRefundEnabled).to.be.false;
 		bucket.dispose();
 
 		bucket = new TokenBucket({
-			maxTokens: 100,
+			capacity: 100,
 			behavior: {
 				refund: {
 					enabled: true,
@@ -119,12 +122,12 @@ describe('TokenBucket - Accessors', () => {
 	});
 
 	it("Properly handles 'isAutoRefundEnabled' property access - Auto Refund section defined", () => {
-		let bucket = new TokenBucket({ maxTokens: 100 });
+		let bucket = new TokenBucket({ capacity: 100 });
 		expect(bucket.isAutoRefundEnabled).to.be.false;
 		bucket.dispose();
 
 		bucket = new TokenBucket({
-			maxTokens: 100,
+			capacity: 100,
 			behavior: {
 				refund: {
 					enabled: true,
@@ -141,12 +144,12 @@ describe('TokenBucket - Accessors', () => {
 	});
 
 	it("Properly handles 'isAutoRefundEnabled' property access - Auto Refund section undefined", () => {
-		let bucket = new TokenBucket({ maxTokens: 100 });
+		let bucket = new TokenBucket({ capacity: 100 });
 		expect(bucket.isAutoRefundEnabled).to.be.false;
 		bucket.dispose();
 
 		bucket = new TokenBucket({
-			maxTokens: 100,
+			capacity: 100,
 			behavior: {
 				refund: {
 					enabled: true,
@@ -163,21 +166,21 @@ describe('TokenBucket - Accessors', () => {
 
 describe('TokenBucket - Taking Tokens', () => {
 	it('Does not throw when tokens are taken when available', () => {
-		const bucket = new TokenBucket({ maxTokens: 100 })
+		const bucket = new TokenBucket({ capacity: 100 })
 		expect(() => bucket.take(1)).to.not.throw();
 
 		bucket.dispose();
 	});
 
 	it('Does not throw when all available tokens are taken', () => {
-		const bucket = new TokenBucket({ maxTokens: 100 })
+		const bucket = new TokenBucket({ capacity: 100 })
 		expect(() => bucket.take(100)).to.not.throw();
 
 		bucket.dispose();
 	});
 
 	it("Throws a 'RangeError' when attempting to a non-positive-number of tokens", () => {
-		const bucket = new TokenBucket({ maxTokens: 100 })
+		const bucket = new TokenBucket({ capacity: 100 })
 		expect(() => bucket.take(0)).to.throw(RangeError);
 		expect(() => bucket.take(-1)).to.throw(RangeError);
 		expect(() => bucket.take('str' as any)).to.throw(RangeError);
@@ -188,21 +191,21 @@ describe('TokenBucket - Taking Tokens', () => {
 
 
 	it("Throws an 'OutOfTokensError' when attempting to take tokens when none are available", () => {
-		const bucket = new TokenBucket({ maxTokens: 0 })
+		const bucket = new TokenBucket({ capacity: 0 })
 		expect(() => bucket.take(1)).to.throw(OutOfTokensError);
 
 		bucket.dispose();
 	});
 
 	it("Throws an 'OutOfTokensError' when attempting to take more tokens than are available", () => {
-		const bucket = new TokenBucket({ maxTokens: 100 })
+		const bucket = new TokenBucket({ capacity: 100 })
 		expect(() => bucket.take(101)).to.throw(OutOfTokensError);
 
 		bucket.dispose();
 	});
 
 	it("Thrown 'OutOfTokensError' errors are correct", () => {
-		const bucket = new TokenBucket({ maxTokens: 100 })
+		const bucket = new TokenBucket({ capacity: 100 })
 		expect(() => bucket.take(101)).to.throw(
 			OutOfTokensError,
 			/.*does not have enough tokens to fulfil the request. Available: 100, requested: 101$/
@@ -212,7 +215,7 @@ describe('TokenBucket - Taking Tokens', () => {
 	});
 
 	it('Bucket updates correctly when tokens are taken', () => {
-		const bucket = new TokenBucket({ maxTokens: 10 });
+		const bucket = new TokenBucket({ capacity: 10 });
 		bucket.take(4);
 		expect(bucket.tokens).to.equal(6);
 
@@ -223,7 +226,7 @@ describe('TokenBucket - Taking Tokens', () => {
 
 describe('TokenBucket - Refunding Tokens', () => {
 	it('Does not throw when tokens are refunded - Refunding Disabled', () => {
-		const bucket = new TokenBucket({ maxTokens: 10 });
+		const bucket = new TokenBucket({ capacity: 10 });
 
 		const ticket = bucket.take(4);
 		expect(() => bucket.refund(ticket)).to.not.throw;
@@ -231,7 +234,7 @@ describe('TokenBucket - Refunding Tokens', () => {
 	});
 
 	it('Bucket does not refund tokens - Refunding Disabled', () => {
-		const bucket = new TokenBucket({ maxTokens: 10 });
+		const bucket = new TokenBucket({ capacity: 10 });
 
 		const ticket = bucket.take(5);
 		bucket.refund(ticket);
@@ -241,7 +244,7 @@ describe('TokenBucket - Refunding Tokens', () => {
 
 	it('Does not throw when tokens are refunded - Refunding Enabled', () => {
 		const bucket = new TokenBucket({
-			maxTokens: 10,
+			capacity: 10,
 			behavior: {
 				refund: {
 					enabled: true,
@@ -257,7 +260,7 @@ describe('TokenBucket - Refunding Tokens', () => {
 
 	it('Tokens are refunded when a valid ticket is refunded - Refunding Enabled', () => {
 		const bucket = new TokenBucket({
-			maxTokens: 10,
+			capacity: 10,
 			behavior: {
 				refund: {
 					enabled: true,
@@ -274,7 +277,7 @@ describe('TokenBucket - Refunding Tokens', () => {
 
 	it('Tokens are not refunded when an expired ticket is refunded - Refunding Enabled', async () => {
 		const bucket = new TokenBucket({
-			maxTokens: 10,
+			capacity: 10,
 			behavior: {
 				refund: {
 					enabled: true,
@@ -291,9 +294,9 @@ describe('TokenBucket - Refunding Tokens', () => {
 	});
 
 	it('Tokens are refunded when tickets expire and auto-refund is enabled', async () => {
-		const maxTokens = 10;
+		const capacity = 10;
 		const bucket = new TokenBucket({
-			maxTokens,
+			capacity,
 			automaticDrip: {
 				enabled: false,
 			},
@@ -317,14 +320,38 @@ describe('TokenBucket - Refunding Tokens', () => {
 		bucket.take(tokensToTake);
 
 		await expect(autoRefundPromise).to.eventually.become(tokensToTake);
-		expect(bucket.tokens).to.equal(maxTokens)
+		expect(bucket.tokens).to.equal(capacity)
 	}).slow(1500);
+
+	it('Refunded tickets are not refunded again upon expire when auto-refund is enabled', async () => {
+		const bucket = new TokenBucket({
+			capacity: 100,
+			startEmpty: true,
+			automaticDrip: {
+				enabled: false,
+			},
+			behavior: {
+				refund: {
+					enabled: true,
+					refundTicketsExpiry: Duration.FromMilliseconds(2),
+					autoRefund: {
+						enabled: true,
+					}
+				}
+			}
+		});
+		bucket.drip(10);
+		const ticket = bucket.take(5);
+		bucket.refund(ticket);
+		await sleep(20);
+		expect(bucket.tokens).to.equal(10)
+	});
 
 });
 
 describe('TokenBucket - Dripping', () => {
 	it("Throws an error if 'drip' is called with an argument other than a positive integer", () => {
-		const bucket = new TokenBucket({ maxTokens: 100 });
+		const bucket = new TokenBucket({ capacity: 100 });
 		expect(() => bucket.drip(0)).to.throw(RangeError);
 		expect(() => bucket.drip(-1)).to.throw(RangeError);
 		expect(() => bucket.drip(undefined as any)).to.throw(RangeError);
@@ -332,15 +359,15 @@ describe('TokenBucket - Dripping', () => {
 		expect(() => bucket.drip('str' as any)).to.throw(RangeError);
 	});
 
-	it("Does not increment tokens beyond what's specified by 'maxTokens'", () => {
-		const maxTokens = 100;
-		const bucket = new TokenBucket({ maxTokens });
-		expect(bucket.tokens).to.equal(maxTokens);
+	it("Does not increment tokens beyond what's specified by 'capacity'", () => {
+		const capacity = 100;
+		const bucket = new TokenBucket({ capacity });
+		expect(bucket.tokens).to.equal(capacity);
 		try {
 			bucket.drip(10)
 		} finally { }
 
-		expect(bucket.tokens).to.equal(maxTokens);
+		expect(bucket.tokens).to.equal(capacity);
 
 	});
 });
@@ -350,7 +377,7 @@ describe('TokenBucket - Events', () => {
 		const tokensToDrip = 1;
 
 		const bucket = new TokenBucket({
-			maxTokens: 10000,
+			capacity: 10000,
 			startEmpty: true,
 			automaticDrip: {
 				enabled: true,
@@ -370,7 +397,7 @@ describe('TokenBucket - Events', () => {
 	it("Properly raises event 'dripped' when autoDrip is disabled and drip is manually called", () => {
 		const tokensToDrip = 1;
 
-		const bucket = new TokenBucket({ maxTokens: 10000, startEmpty: true });
+		const bucket = new TokenBucket({ capacity: 10000, startEmpty: true });
 
 		const drippedPromise = new Promise<number>((resolve) => {
 			bucket.dripped.attach((sender, e) => resolve(e));
@@ -382,7 +409,7 @@ describe('TokenBucket - Events', () => {
 
 	it("Properly raises event 'tokensTaken'", () => {
 		const bucket = new TokenBucket({
-			maxTokens: 10000,
+			capacity: 10000,
 			automaticDrip: {
 				enabled: true,
 				interval: Duration.FromMilliseconds(1),
@@ -403,7 +430,7 @@ describe('TokenBucket - Events', () => {
 
 	it("Properly raises event 'tokensRefunded'", () => {
 		const bucket = new TokenBucket({
-			maxTokens: 10000,
+			capacity: 10000,
 			automaticDrip: {
 				enabled: true,
 				interval: Duration.FromMilliseconds(1),

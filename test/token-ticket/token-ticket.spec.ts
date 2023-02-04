@@ -12,7 +12,7 @@ describe('TokenTicket - Sanity', () => {
 
 	it('Issued tickets contain correct information - Refunding disabled', () => {
 		const bucketName = 'Ticket Validity Check';
-		const bucket = new TokenBucket({ bucketName, maxTokens: 10 });
+		const bucket = new TokenBucket({ bucketName, capacity: 10 });
 
 		const approxIssueTimeStart = Date.now();
 		const ticket = bucket.take(4);
@@ -34,7 +34,7 @@ describe('TokenTicket - Sanity', () => {
 
 		const bucket = new TokenBucket({
 			bucketName,
-			maxTokens: 10,
+			capacity: 10,
 			behavior: {
 				refund: {
 					enabled: true,
@@ -60,7 +60,7 @@ describe('TokenTicket - Sanity', () => {
 
 	it('Expired tokens are correctly marked as such', async () => {
 		const bucket = new TokenBucket({
-			maxTokens: 10,
+			capacity: 10,
 			behavior: {
 				refund: {
 					enabled: true,
@@ -79,7 +79,7 @@ describe('TokenTicket - Sanity', () => {
 	it('Correctly detects orphaned state', async () => {
 		function getTicketWithLeakingParent(): ITokensTicket {
 			const bucket = new TokenBucket({
-				maxTokens: 10,
+				capacity: 10,
 				behavior: {
 					refund: {
 						enabled: true,
@@ -116,7 +116,7 @@ describe('TokenTicket - Sanity', () => {
 	it('Throws an error when cloned after being orphaned', async () => {
 		function getTicketWithLeakingParent(): ITokensTicket {
 			const bucket = new TokenBucket({
-				maxTokens: 10,
+				capacity: 10,
 				behavior: {
 					refund: {
 						enabled: true,
@@ -156,7 +156,7 @@ describe('TokenTicket - Sanity', () => {
 describe('TokenTicket - Refunding', () => {
 	it("Refunding twice does nothing and does not raise 'refunded' event", async () => {
 		const bucket = new TokenBucket({
-			maxTokens: 10,
+			capacity: 10,
 			automaticDrip: {
 				enabled: false,
 			},
@@ -188,7 +188,7 @@ describe('TokenTicket - Refunding', () => {
 	it("Does not throw and correctly updates state if 'refund' is called but ticket is orphaned", async () => {
 		function getTicketWithLeakingParent(): ITokensTicket {
 			const bucket = new TokenBucket({
-				maxTokens: 10,
+				capacity: 10,
 				behavior: {
 					refund: {
 						enabled: true,

@@ -15,12 +15,17 @@ export interface ITokenBucket {
 	get name(): string | undefined;
 
 	/**
+	 * The bucket's capacity, i.e., the maximum number of tokens it can hold
+	 */
+	get capacity(): number;
+
+	/**
 	 * The number of tokens currently available in the bucket
 	 */
 	get tokens(): number;
 
 	/**
-	 * An event that is invoked whenever tokens 'drip' into the bucket
+	 * An event raised whenever tokens 'drip' into the bucket
 	 *
 	 * This includes both automatic and manual drips
 	 */
@@ -28,15 +33,37 @@ export interface ITokenBucket {
 
 
 	/**
-	 * An event that is invoked whenever tokens are taken from the bucket
+	 * An event raised after tokens are taken from the bucket
 	 *
 	 */
 	get tokensTaken(): ITypedEvent<ITokenBucket, number>;
 
+	/**
+	 * An event raised after tokens were returned to the bucket
+	 */
 	get tokensRefunded(): ITypedEvent<ITokenBucket, number>;
 
+	/**
+	 * Gets a boolean indicating whether the bucket instance has been disposed.
+	 *
+	 * ***Calling any instance method after 'dispose' will result in undefined behavior***
+	 *
+	 * @description Buckets hold internal timers and potentially hard references to tickets.
+	 * As such, improper use could cause memory leaks by preventing GC from collecting these objects.
+	 * Calling 'dispose' disowns the objects so they can be collected by GC at its own discretion.
+	 *
+	 * Note that even without a call to 'dispose', the bucket internally uses weakly referenced timers to avoid
+	 * the most common issues. It's still a good idea to call 'dispose' though.
+	 */
 	get isDisposed(): boolean;
 
+	/**
+	 * Adds the given number of tokens to the bucket.
+	 *
+	 * This method ***cannot*** cause the number of tokens to exceed the bucket's configured maximum
+	 *
+	 * @param count The number of tokens to add
+	 */
 	drip(count: number): void;
 
 	take(count: number): ITokensTicket;
