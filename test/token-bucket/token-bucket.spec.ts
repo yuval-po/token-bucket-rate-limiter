@@ -2,12 +2,10 @@ import { sleep } from '../utils/sleep';
 import chai, { expect } from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import { Duration } from 'unitsnet-js';
-import { OutOfTokensError } from '../../src/core/error-handling/out-of-tokens-error';
-import { TokenBucketConfig } from '../../src/core/interfaces';
+
+import { TokenBucket, OutOfTokensError, TokenBucketConfig } from '../../src';
 
 chai.use(chaiAsPromised);
-
-import { TokenBucket } from '../../src/core/token-bucket';
 
 describe('TokenBucket - Construction', () => {
 	it('Throw a TypeError when created with an empty configuration', () => {
@@ -71,7 +69,7 @@ describe('TokenBucket - Construction', () => {
 describe('TokenBucket - Destruction', () => {
 	it("Calling 'dispose' does not throw", () => {
 		const bucket = new TokenBucket({ capacity: 100 });
-		expect(() => bucket.dispose()).to.not.throw;
+		expect(() => bucket.dispose()).to.not.throw();
 	});
 
 	it("Calling 'dispose' updates the 'isDisposed' property", () => {
@@ -84,7 +82,7 @@ describe('TokenBucket - Destruction', () => {
 	it("Does not throw when calling 'dispose' more than once", () => {
 		const bucket = new TokenBucket({ capacity: 100 });
 		bucket.dispose();
-		expect(bucket.dispose()).to.not.throw;
+		expect(() => bucket.dispose()).to.not.throw();
 	});
 });
 
@@ -229,7 +227,7 @@ describe('TokenBucket - Refunding Tokens', () => {
 		const bucket = new TokenBucket({ capacity: 10 });
 
 		const ticket = bucket.take(4);
-		expect(() => bucket.refund(ticket)).to.not.throw;
+		expect(() => bucket.refund(ticket)).to.not.throw();
 		bucket.dispose();
 	});
 
@@ -254,7 +252,7 @@ describe('TokenBucket - Refunding Tokens', () => {
 		});
 
 		const ticket = bucket.take(4);
-		expect(() => bucket.refund(ticket)).to.not.throw;
+		expect(() => bucket.refund(ticket)).to.not.throw();
 		bucket.dispose();
 	});
 

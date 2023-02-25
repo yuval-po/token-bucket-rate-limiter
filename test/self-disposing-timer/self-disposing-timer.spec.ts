@@ -1,27 +1,18 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable max-classes-per-file */
-// eslint-disable @typescript-eslint/no-unused-vars
-
 import chai, { expect } from 'chai';
 import chaiAsPromised from 'chai-as-promised';
+
 import { SelfDisposingTimer } from '../../src/core/self-disposing-timer/self-disposing-timer';
-
-import { getLeakAndWaitForEvent, sleep, GC } from '../utils';
-
-process.on('unhandledRejection', (err) => {
-	console.trace('Faulted during testing! Exiting!', err);
-	process.exit(1);
-});
+import { getLeakAndWaitForEvent, sleep } from '../utils';
 
 chai.use(chaiAsPromised);
 
 describe('SelfDisposingTimer - Sanity', () => {
 	it('Does not throw when constructed with autostart disabled', () => {
-		expect(() => new SelfDisposingTimer({}, () => { }, 10, false)).to.not.throw;
+		expect(() => new SelfDisposingTimer({}, () => { }, 10, false)).to.not.throw();
 	});
 
 	it('Does not throw when constructed with autostart enabled', () => {
-		expect(() => new SelfDisposingTimer({}, () => { }, 10, true)).to.not.throw;
+		expect(() => new SelfDisposingTimer({}, () => { }, 10, true)).to.not.throw();
 	});
 
 	it('Starts and ticks as expected', async () => {

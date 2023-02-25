@@ -1,18 +1,13 @@
 import { expect } from 'chai';
-import { OutOfTokensError } from '../../src/core/error-handling/out-of-tokens-error';
-
-process.on('unhandledRejection', (err) => {
-	console.trace('Faulted during testing! Exiting!', err);
-	process.exit(1);
-});
+import { OutOfTokensError } from '../../src';
 
 describe('OutOfTokensError - Sanity', () => {
 	it('Does not throw when constructed without a bucket name', () => {
-		expect(() => new OutOfTokensError(0, 10)).to.not.throw;
+		expect(() => new OutOfTokensError(0, 10)).to.not.throw();
 	});
 
 	it('Does not throw when constructed with a bucket name', () => {
-		expect(() => new OutOfTokensError(0, 10, 'Bucket Name')).to.not.throw;
+		expect(() => new OutOfTokensError(0, 10, 'Bucket Name')).to.not.throw();
 	});
 
 	it('All public properties are valid', () => {

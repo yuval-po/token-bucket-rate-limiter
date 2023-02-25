@@ -1,6 +1,6 @@
-import { TokenBucket } from '../../src/core/token-bucket';
+import { TokenBucket } from '../../../src/core/token-bucket';
 import { Duration } from 'unitsnet-js';
-import { RateLimit } from '../../src/decorators/rate-limit';
+import { RateLimit } from '../../../src/implementations/decorators/rate-limit';
 
 const syncNonRefundingBucket = new TokenBucket({ capacity: 20 });
 

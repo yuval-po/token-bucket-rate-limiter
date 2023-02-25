@@ -1,4 +1,4 @@
-import { ITokenBucket } from '../core/interfaces';
+import { ITokenBucket } from '../../core/interfaces';
 
 export interface RateLimiterOpts {
 	bucket: ITokenBucket;

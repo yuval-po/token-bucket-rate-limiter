@@ -3,10 +3,9 @@ import chaiAsPromised from 'chai-as-promised';
 import { Duration } from 'unitsnet-js';
 import { GC, sleep } from '../utils';
 
-chai.use(chaiAsPromised);
+import { TokenBucket, ITokensTicket } from '../../src';
 
-import { TokenBucket } from '../../src/core/token-bucket';
-import { ITokensTicket } from 'src/core/interfaces';
+chai.use(chaiAsPromised);
 
 describe('TokenTicket - Sanity', () => {
 

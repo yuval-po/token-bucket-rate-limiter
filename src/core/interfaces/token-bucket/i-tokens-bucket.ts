@@ -1,5 +1,5 @@
 import { ITypedEvent } from 'weak-event';
-import { ITokensTicket } from '../i-tokens-ticket';
+import { ITokensTicket } from '../tokens-ticket/i-tokens-ticket';
 
 /**
  * Represents a token bucket implementation
@@ -30,7 +30,6 @@ export interface ITokenBucket {
 	 * This includes both automatic and manual drips
 	 */
 	get dripped(): ITypedEvent<ITokenBucket, number>;
-
 
 	/**
 	 * An event raised after tokens are taken from the bucket

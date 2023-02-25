@@ -1,6 +1,6 @@
 import chai, { expect } from 'chai';
 import chaiAsPromised from 'chai-as-promised';
-import { OutOfTokensError } from '../../src/core/error-handling/out-of-tokens-error';
+import { OutOfTokensError } from '../../../src';
 
 chai.use(chaiAsPromised);
 
@@ -18,7 +18,7 @@ describe("Decorator 'RateLimit' - Synchronous methods", () => {
 
 	it('Does not throw or affect results when bucket has enough tokens for synchronous operation', () => {
 		const tester = new RateLimitTest();
-		expect(() => tester.syncNonRefundableActionCost10()).to.not.throw;
+		expect(() => tester.syncNonRefundableActionCost10()).to.not.throw();
 		expect(tester.syncNonRefundableActionCost10()).to.equal(true);
 	});
 
@@ -48,7 +48,7 @@ describe("Decorator 'RateLimit' - Asynchronous methods", () => {
 
 	it('Does not throw or affect results when bucket has enough tokens', async () => {
 		const tester = new RateLimitTest();
-		expect(async () => await tester.asyncNonRefundableActionCost10()).to.not.throw;
+		expect(async () => await tester.asyncNonRefundableActionCost10()).to.not.throw();
 		expect(await tester.asyncNonRefundableActionCost10()).to.equal(true);
 	});
 
