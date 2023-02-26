@@ -45,6 +45,8 @@ Please note that this package is __unbundled__
 
 ### Imperative
 	The simplest form of usage is the imperative way:
+
+	https://github.com/yuval-po/token-bucket-rate-limiter/blob/9cb1be79d539143251a2ec42f2a52034530c203e/examples/imperative/imperative.pseudo#L1-L8
 	
 
 ### Decorator
