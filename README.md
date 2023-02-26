@@ -28,7 +28,8 @@ Short poem by _ChatGTP_
 </br>
 
 > #### Important note:
-> This library makes no attempt to support multithreaded scenarios
+> This library makes no attempt to support multithreaded scenarios.  
+> The rate limiter implementation is ***not*** thread safe.
 
 
 ### Installation
@@ -37,7 +38,6 @@ Short poem by _ChatGTP_
 * yarn add token-bucket-rate-limiter
 
 Please note that this package is __unbundled__
-
 
 </br>
 
@@ -70,139 +70,71 @@ https://github.com/yuval-po/token-bucket-rate-limiter/blob/ba727e4884e3cfb83294b
 
 </br>
 
+## Configuration & Advanced Usage
+
+The bucket's core is designed to be flexible enough to support most common use-cases.
+Below are some example configurations that can be used to customize its behavior.
+
+
+### Basic Configuration
+
+The simplest configuration creates a bucket with a fixed capacity and no automatic drip:
+
+[LINK HERE]
+
+
+
+### Auto-Drip Configuration
+
+A common use case for token buckets is to periodically add (drip) tokens to the bucket at a fixed rate.  
+This can be accomplished using the `automaticDrip` configuration property:
+
+[LINK HERE]
+
+In this example, the bucket will automatically add 5 tokens every 5 seconds.
+
+
+## Refund Configuration
+
+Token buckets can be configured to allow refunds of 'issued' tokens. This can be useful in situations where you'd like to 'return' the capacity to the server after an operation has concluded.
+
+For example, you perform, on behalf of the user, a demanding database operation.
+
+Say, for simplicity's sake, that the operation takes 100% of the server's capacity.  
+While you don't want multiple such operations to run concurrently, you may want to immediately 'refund' this capacity as soon as the operation is over.
+
+The `refund `configuration property can be used to enable refunds:
+
+[LINK HERE]
+
+In this example, the bucket is configured to allow refunds with a refund window of 30 minutes.
+
+## Auto-Refund Configuration
+
+Token buckets can also be configured to automatically refund expired tokens. This can be useful in situations where the 'tail end' of operations is not fully visible, for lack of a better term.
+
+Suppose you're protecting a proxy server. You know the request has a certain 'weight'. You route it to the target server and start polling for the operation's status.  
+At some point, you may lose connection with the target server, at which point you have a choice to make;  
+Do you consider this capacity 'lost' and allow the token bucket to refill slowly or do you choose a cutoff point at which you're reasonably certain the server, regardless of conditions, has either fulfilled or dropped the request?  
+
+Auto-refund is the latter, where you may state that an operation that takes more than 2 minutes, for instance is 'lost at sea' and its capacity can be immediately returned to the bucket.
+
+Another possible (though somewhat dubious) use for this mechanism is to safeguard against developer errors. If a developer makes a mistake and an operation that should refund itself (i.e. call `ITokenTicket.refund()`) does not do so, you can experience rapid capacity loss.
+
+Auto-refund can mitigate this, to some degree by ensuring token tickets are eventually reclaimed.
+
+are granted for a limited time period and it is important to ensure that unused tokens are returned to the bucket even if the user forgets to manually refund them. The autoRefund configuration property can be used to enable auto-refunds:
+
+[LINK HERE]
+
+In this example, the bucket is configured to allow refunds with a refund window of 30 minutes, and auto-refunds of expired tokens enabled.
+
 ## Other notes
 
 For any bugs, questions, suggestions or comments, feel free to hit me on my mail (I may take a while to notice) at [yuval.pomer](mailto:yuval.pomer@protonmail.com?subject=[Token-bucket-Rate-Limiter%20Feedback]) or open an issue at my [GitHub](https://github.com/yuval-po/token-bucket-rate-limiter/issues)
 
 Feedback, positive or otherwise is appreciated and welcome.
 
-
-## Usage
-
-### Imperative
-
-### Decorator
-
-### Middleware
-
-The below example is a simplified but rather typical use-case where an event listener object goes
-out of scope.
-
-Under normal circumstances, the Garbage Collector would not reclaim the object as it's still
-referenced by the the event source's listener's dictionary.
-
-Using `WeakEvent`, however, GC can collect the object, at which point a finalizer will be invoked and the dead reference cleaned from the event source's map.
-This ensures memory is eventually reclaimed and can, over time, make a significant difference.
-
-
-```typescript
-import { TypedEvent, ITypedEvent } from 'weak-event';
-
-class DummyEventSource {
-
-	private _someEvent = new WeakEvent<DummyEventSource, boolean>();
-
-	public get someEvent(): ITypedEvent<DummyEventSource, boolean> {
-		return this._someEvent;
-	}
-
-	private async raiseEventAsynchronously(): Promise<void> {
-		this._someEvent.invokeAsync(this, true);
-	}
-}
-
-class DummyEventConsumer {
-
-	public constructor(eventSource: DummyEventSource) {
-
-		// Valid usage. Handler signature matches event.
-		eventSource.someEvent.attach(this.onEvent);
-	}
-
-	private onEvent(sender: DummyEventSource, e: boolean): void {
-		console.log(`Event payload: ${e}`);
-	}
-}
-
-class LeakyClass {
-
-	private _eventSource = new DummyEventSource();
-
-	public createConsumer(): void {
-		const consumer = new DummyEventConsumer(this._eventSource);
-		/* Do something with consumer
-		 ...
-		 ...
-		 ...
-		 Forget to 'dispose'. Consumer goes out of scope. Memory is leaked
-		*/
-	}
-}
-
-```
-
-</br>
-
-### Typed Event
-
-The most basic type of event. Uses strong references and behaves like other events do
-
-```typescript
-import { TypedEvent, ITypedEvent } from 'weak-event';
-
-class DummyEventSource {
-
-	public get someProperty(): string {
-		return "I'm an event source";
-	}
-
-	private _someEvent = new TypedEvent<DummyEventSource, string>();
-
-	public get someEvent(): ITypedEvent<DummyEventSource, string> {
-		return this._someEvent;
-	}
-
-	private raiseEventSynchronously(): void {
-		this._someEvent.invoke(this, 'Some value');
-
-		// We get here after all events have been synchronously invoked
-		console.log('Done!');
-	}
-
-	private async raiseEventAsynchronously(): Promise<void> {
-		this._someEvent.invokeAsync(this, 'Some value');
-
-		// We get here as soon as the 'invokeAsync' method yields.
-		// Events are invoked asynchronously.
-		console.log('Done!');
-	}
-}
-
-class DummyEventConsumer {
-
-	private _eventSource: DummyEventSource;
-
-	public constructor(eventSource: DummyEventSource) {
-
-		this._eventSource = eventSource;
-
-		// Valid usage. Handler signature matches event.
-		eventSource.someEvent.attach(this.onEvent);
-	}
-
-	private onEvent(sender: DummyEventSource, e: string): void {
-		console.log(`Caller property: ${sender.someProperty}, Event payload: ${e}`);
-	}
-
-	public dispose(): void {
-		// Detach the event handler
-		this._eventSource.someEvent.detach(this.onEvent);
-	}
-}
-
-
-```
-<br />
 
 ## Changelog
 

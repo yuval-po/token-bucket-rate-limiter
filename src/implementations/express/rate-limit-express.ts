@@ -29,6 +29,11 @@ export interface RateLimitOptions {
 
 /**
  * Creates a rate limit middleware that can be used to rate limit requests by using a token-bucket mechanism
+ *
+ * @description When a request successfully passes through this middleware, it is injected with the 'rateLimiterTicket' property
+ * to allow lower level code to, for example signal that the operation has concluded and the
+ * tokens may be refunded (depending on bucket configuration)
+ *
  * @param opts - The rate limit options
  * @returns A middleware function that can be used by Express to rate limit requests
  */
