@@ -149,7 +149,7 @@ In this example, the bucket is configured to allow refunds with a refund window 
 | `automaticDrip.interval` | `Duration` | The regular interval at which tokens should be dripped into the bucket |
 | `automaticDrip.tokens` | `number` | The number of tokens to drip per interval |
 | `behavior.refund.enabled` | `boolean` | A boolean indicating whether the bucket allows refunding of tickets |
-| `behavior.refund.refundTicketsExpiry` | `Duration` | The duration for which token tickets are valid.</br>Expired tickets cannot be refunded.</br>If auto-refund is enabled, expired tickets are automatically 'reclaimed' by the bucket (i.e. the tokens are returned) |
+| `behavior.refund.refundTicketsExpiry` | `Duration` | The duration for which token tickets are valid.</br>Expired tickets cannot be refunded.</br>If `autoRefund` is enabled, expired tickets are automatically 'reclaimed' by the bucket (i.e. the tokens are returned) |
 | `behavior.refund.autoRefund.enabled` | `boolean` | A boolean indicating whether the bucket should enable auto-refunding of expired tickets.</br>This property is ignored if `behavior.refund.enabled`  is `false` |
 
 
