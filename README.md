@@ -45,6 +45,8 @@ Please note that this package is __unbundled__
 
 ## Basic Usage
 
+_Please note the following examples are actually pseudo-code, small errors may be possible_
+
 ### Imperative
 The simplest form of usage is the imperative way- create a bucket instance and use it directly.  
 
@@ -77,9 +79,8 @@ https://github.com/yuval-po/token-bucket-rate-limiter/blob/ba727e4884e3cfb83294b
 The bucket's core is designed to be flexible enough to support most common use-cases.
 Below are some example configurations that can be used to customize its behavior.
 
-The library's external interfaces are documented
 
-_Please note the following examples are not linted, small errors may be possible_
+_Please note the following examples are actually pseudo-code, small errors may be possible_
 
 
 ### Basic Configuration
