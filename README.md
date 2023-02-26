@@ -41,15 +41,19 @@ Please note that this package is __unbundled__
 
 </br>
 
-## Usage
+## Basic Usage
 
 ### Imperative
 	The simplest form of usage is the imperative way:
 
-	https://github.com/yuval-po/token-bucket-rate-limiter/blob/9cb1be79d539143251a2ec42f2a52034530c203e/examples/imperative/imperative.pseudo#L1-L8
+https://github.com/yuval-po/token-bucket-rate-limiter/blob/9cb1be79d539143251a2ec42f2a52034530c203e/examples/imperative/imperative.pseudo#L1-L8
 	
 
 ### Decorator
+
+	The decorator approach is useful for when you'd like to enforce limits on class methods. A prime example would be an API Controller class.
+
+https://github.com/yuval-po/token-bucket-rate-limiter/blob/3242716ecb4f0f177b8853214d7fe588320e9266/examples/decorator/decorator.pseudo#L1-L20
 
 ### Middleware
 
