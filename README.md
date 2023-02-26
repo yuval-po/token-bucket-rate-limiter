@@ -23,7 +23,7 @@ Bucket based limiters are useful in managing load in resource constrained scenar
 > Remember, it's key from the start,</br>
 > Lest your server falls apart!</br>
 
-Short poem by _ChatGTP_
+Short poem by _ChatGPT_
 
 </br>
 
@@ -36,7 +36,7 @@ Short poem by _ChatGTP_
 
 * npm install token-bucket-rate-limiter
 * yarn add token-bucket-rate-limiter
-
+</br>
 Please note that this package is __unbundled__
 
 </br>
@@ -54,7 +54,7 @@ https://github.com/yuval-po/token-bucket-rate-limiter/blob/9cb1be79d539143251a2e
 
 ### Decorator
 
-The decorator approach is useful for when you'd like to enforce limits on class methods. Prime examples would be an API Controller or Service class.
+The decorator approach is useful for when you'd like to enforce limits on class methods. Prime examples would be a Controller or Service class.
 
 https://github.com/yuval-po/token-bucket-rate-limiter/blob/3242716ecb4f0f177b8853214d7fe588320e9266/examples/decorator/decorator.pseudo#L1-L20
 
@@ -74,6 +74,10 @@ https://github.com/yuval-po/token-bucket-rate-limiter/blob/ba727e4884e3cfb83294b
 
 The bucket's core is designed to be flexible enough to support most common use-cases.
 Below are some example configurations that can be used to customize its behavior.
+
+The library's external interfaces are documented
+
+_Please note the following examples are not linted, small errors may be possible_
 
 
 ### Basic Configuration
@@ -128,7 +132,26 @@ are granted for a limited time period and it is important to ensure that unused 
 
 https://github.com/yuval-po/token-bucket-rate-limiter/blob/a9c9e9ba69d2d874c05a70ccf977d9de134149c7/examples/configuration/auto-refund.pseudo#L1-L17
 
-In this example, the bucket is configured to allow refunds with a refund window of 30 minutes, and auto-refunds of expired tokens enabled.
+In this example, the bucket is configured to allow refunds with a refund window of 30 minutes and auto-refunds of expired tokens enabled.
+
+</br>
+
+## Bucket Configuration Options Rundown
+
+</br>
+
+| Config Option | Type | Description |
+| --- | --- | --- |
+| `bucketName` | `string` | The bucket's display name |
+| `capacity` | `number` | The bucket's capacity, i.e., the maximum number of tokens the bucket can hold |
+| `startEmpty` | `boolean` | A boolean indicating whether the bucket should be empty upon construction.</br>By default, buckets are constructed 'full', that is, they initially hold the designated `capacity` |
+| `automaticDrip.enabled` | `boolean` | A boolean indicating whether the bucket should periodically receive new tokens |
+| `automaticDrip.interval` | `Duration` | The regular interval at which tokens should be dripped into the bucket |
+| `automaticDrip.tokens` | `number` | The number of tokens to drip per interval |
+| `behavior.refund.enabled` | `boolean` | A boolean indicating whether the bucket allows refunding of tickets |
+| `behavior.refund.refundTicketsExpiry` | `Duration` | The duration for which token tickets are valid.</br>Expired tickets cannot be refunded.</br>If auto-refund is enabled, expired tickets are automatically 'reclaimed' by the bucket (i.e. the tokens are returned) |
+| `behavior.refund.autoRefund.enabled` | `boolean` | A boolean indicating whether the bucket should enable auto-refunding of expired tickets.</br>This property is ignored if `behavior.refund.enabled`  is `false` |
+
 
 ## Other notes
 
@@ -136,6 +159,9 @@ For any bugs, questions, suggestions or comments, feel free to hit me on my mail
 
 Feedback, positive or otherwise is appreciated and welcome.
 
+Credit where credit's due, some of this documentation was generated using OpenAI's ChatGPT which saves quite a bit of hassle.
+
+</br>
 
 ## Changelog
 

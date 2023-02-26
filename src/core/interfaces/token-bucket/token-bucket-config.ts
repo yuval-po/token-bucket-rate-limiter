@@ -40,6 +40,8 @@ interface AutoRefundBehavior {
 	/**
 	 * A boolean indicating whether the bucket should enable auto-refunding of expired tickets
 	 *
+	 * This property is ignored if refunding is not enabled
+	 *
 	 * @type {boolean}
 	 * @memberof AutoRefundBehavior
 	 */
