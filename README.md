@@ -36,8 +36,10 @@ Short poem by _ChatGPT_
 
 * npm install token-bucket-rate-limiter
 * yarn add token-bucket-rate-limiter
+
 </br>
-Please note that this package is **unbundled**
+
+Please note that this package is __unbundled__
 
 </br>
 
