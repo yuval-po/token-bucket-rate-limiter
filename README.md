@@ -167,4 +167,4 @@ Credit where credit's due, some of this documentation was generated using OpenAI
 
 ## Changelog
 
-Changelog may be found at the project's GitHub [here](https://github.com/yuval-po/weak-event/blob/main/CHANGELOG.md)
+Changelog may be found at the project's GitHub [here](https://github.com/yuval-po/token-bucket-rate-limiter/blob/main/CHANGELOG.md)
