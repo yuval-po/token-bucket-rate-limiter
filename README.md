@@ -44,19 +44,31 @@ Please note that this package is __unbundled__
 ## Basic Usage
 
 ### Imperative
-	The simplest form of usage is the imperative way:
+The simplest form of usage is the imperative way- create a bucket instance and use it directly.  
+
+This approach is useful when you require custom behaviors not available on the built-in Decorator and Middleware implementations.
 
 https://github.com/yuval-po/token-bucket-rate-limiter/blob/9cb1be79d539143251a2ec42f2a52034530c203e/examples/imperative/imperative.pseudo#L1-L8
 	
+</br>
 
 ### Decorator
 
-	The decorator approach is useful for when you'd like to enforce limits on class methods. A prime example would be an API Controller class.
+The decorator approach is useful for when you'd like to enforce limits on class methods. Prime examples would be an API Controller or Service class.
 
 https://github.com/yuval-po/token-bucket-rate-limiter/blob/3242716ecb4f0f177b8853214d7fe588320e9266/examples/decorator/decorator.pseudo#L1-L20
 
+</br>
+
 ### Middleware
 
+_Express_ middleware-based limitation is also available. It is a rather flexible approach as it can be specific or general depending on its position in the middleware stack.
+
+The middleware can also fulfil the role of a 'dumb' rate limiter by indiscriminantly routing all requests through it
+
+https://github.com/yuval-po/token-bucket-rate-limiter/blob/ba727e4884e3cfb83294bfa84929df5229418342/examples/middleware/middleware.pseudo#L1-L16
+
+</br>
 
 ## Other notes
 
