@@ -80,16 +80,16 @@ Below are some example configurations that can be used to customize its behavior
 
 The simplest configuration creates a bucket with a fixed capacity and no automatic drip:
 
-[LINK HERE]
-
-
+https://github.com/yuval-po/token-bucket-rate-limiter/blob/a9c9e9ba69d2d874c05a70ccf977d9de134149c7/examples/configuration/basic.pseudo#L1-L3
 
 ### Auto-Drip Configuration
 
 A common use case for token buckets is to periodically add (drip) tokens to the bucket at a fixed rate.  
 This can be accomplished using the `automaticDrip` configuration property:
 
-[LINK HERE]
+
+https://github.com/yuval-po/token-bucket-rate-limiter/blob/a9c9e9ba69d2d874c05a70ccf977d9de134149c7/examples/configuration/auto-drip.pseudo#L1-L13
+
 
 In this example, the bucket will automatically add 5 tokens every 5 seconds.
 
@@ -105,9 +105,10 @@ While you don't want multiple such operations to run concurrently, you may want 
 
 The `refund `configuration property can be used to enable refunds:
 
-[LINK HERE]
+https://github.com/yuval-po/token-bucket-rate-limiter/blob/a9c9e9ba69d2d874c05a70ccf977d9de134149c7/examples/configuration/refund.pseudo#L1-L14
 
 In this example, the bucket is configured to allow refunds with a refund window of 30 minutes.
+
 
 ## Auto-Refund Configuration
 
@@ -125,7 +126,7 @@ Auto-refund can mitigate this, to some degree by ensuring token tickets are even
 
 are granted for a limited time period and it is important to ensure that unused tokens are returned to the bucket even if the user forgets to manually refund them. The autoRefund configuration property can be used to enable auto-refunds:
 
-[LINK HERE]
+https://github.com/yuval-po/token-bucket-rate-limiter/blob/a9c9e9ba69d2d874c05a70ccf977d9de134149c7/examples/configuration/auto-refund.pseudo#L1-L17
 
 In this example, the bucket is configured to allow refunds with a refund window of 30 minutes, and auto-refunds of expired tokens enabled.
 
