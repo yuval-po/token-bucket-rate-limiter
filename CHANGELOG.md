@@ -1,3 +1,12 @@
+## [1.0.3](https://github.com/yuval-po/token-bucket-rate-limiter/compare/v1.0.2...v1.0.3) (2023-02-27)
+
+
+### Bug Fixes
+
+* **CICD:** Update YML action versions ([56bc8b8](https://github.com/yuval-po/token-bucket-rate-limiter/commit/56bc8b860e1bb3fd1df89d03d1af1e612b270812))
+
+
+
 ## [1.0.2](https://github.com/yuval-po/token-bucket-rate-limiter/compare/v1.0.1...v1.0.2) (2023-02-27)
 
 
