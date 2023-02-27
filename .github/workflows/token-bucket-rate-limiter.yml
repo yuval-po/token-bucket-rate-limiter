@@ -1,0 +1,61 @@
+name: token-bucket-rate-limiter
+
+on:
+  push:
+    paths-ignore:
+      - 'package.json'
+      - 'CHANGELOG.md'
+
+jobs:
+  cover:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [14.6]
+    steps:
+    - uses: actions/checkout@v1 
+    - name: Install node
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: Unit-Tests
+      run: |
+        yarn install
+        yarn run cover
+    - name: Publish to Coveralls
+      uses: coverallsapp/github-action@v1.1.2 
+      with:
+        github-token: ${{ github.token }} 
+
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [14.6]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install node
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: Build
+      run: |
+        yarn install
+        yarn lint
+        yarn compile
+
+  changelog:
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [14.6]
+    if: ${{ github.ref == 'refs/heads/main' }}
+    steps:
+    - uses: actions/checkout@v2
+    - name: Conventional Changelog Action
+      uses: TriPSs/conventional-changelog-action@v3
+      with:
+        github-token: ${{ secrets.github_token }}
+        skip-on-empty: false
+        git-message: 'Automatic changelog update by Conventional Changelog Action - {version}'

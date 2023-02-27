@@ -139,6 +139,18 @@ In this example, the bucket is configured to allow refunds with a refund window 
 
 </br>
 
+## Notes about proper usage
+
+Here's a list of a few things (in no particular order) to keep in mind, when using the library.
+
+* Bucket objects are not 'free'; Each contains a dedicated internal cache and timers.
+  They're not 'expensive' objects but keep in mind that if you intend to create them by the thousands (you shouldn't need to) the resources will probably add up.
+
+* Expanding on the previous point, buckets contain resources, such as timers, that must be freed.
+  While bucket and associated components are able to detect when they are no longer needed and free up those resources, you should still strive
+  to call the bucket's `dispose` function to cleanly reclaim said resources.
+
+
 ## Bucket Configuration Options Rundown
 
 </br>

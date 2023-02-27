@@ -1,9 +1,60 @@
 import NodeCache from 'node-cache';
+import { Duration } from 'unitsnet-js';
 import { ITypedEvent, TypedEvent } from 'weak-event';
 import { OutOfTokensError } from './error-handling/out-of-tokens-error';
 import { ITokensTicket, ITokenBucket, TokenBucketConfig } from './interfaces';
 import { SelfDisposingTimer } from './self-disposing-timer/self-disposing-timer';
 import { TokensTicket } from './tokens-ticket';
+
+const ACTIVE_CACHES: { owner: WeakRef<ITokenBucket>, cache: NodeCache }[] = [];
+
+let ORPHAN_CHECK_INTERVAL: Duration = Duration.FromMinutes(2);
+
+//#region Internal Testing/Diagnostics
+
+/**
+* Sets the interval at which internal caches should be tested for being orphaned.
+* This is a diagnostic feature related to the bucket's anti-memory-leak logic
+*
+* @description By default, each token bucket has a self-disposing-timer that monitors its state.
+* When the bucket is reclaimed by GC, the timer fires an event that closes the late bucket's cache to allow it to be GCed as well
+*
+* @export
+* @param {Duration} duration
+*/
+export function setOrphanCheckInterval(duration: Duration): void {
+	ORPHAN_CHECK_INTERVAL = duration;
+}
+
+export function clearActiveCaches(): void {
+	ACTIVE_CACHES.splice(0, ACTIVE_CACHES.length);
+}
+
+//#endregion Internal Testing/Diagnostics
+
+function registerCache(owner: ITokenBucket, cache: NodeCache): void {
+	ACTIVE_CACHES.push({ cache, owner: new WeakRef(owner) });
+}
+
+function unregisterCache(owner: ITokenBucket): void {
+	const cacheIndex = ACTIVE_CACHES.findIndex((cache) => cache.owner.deref() === owner);
+	if (cacheIndex < 0) {
+		return;
+	}
+
+	ACTIVE_CACHES.splice(cacheIndex, 1);
+}
+
+function onCacheOrphaned(sender: SelfDisposingTimer<TokenBucket>): void {
+	const cacheIndex = ACTIVE_CACHES.findIndex((cache) => cache.owner.deref() === undefined);
+	if (cacheIndex < 0) {
+		return;
+	}
+
+	ACTIVE_CACHES[cacheIndex].cache.close();
+	ACTIVE_CACHES.splice(cacheIndex, 1);
+	sender.orphaned.detach(onCacheOrphaned);
+}
 
 export class TokenBucket implements ITokenBucket {
 
@@ -16,6 +67,8 @@ export class TokenBucket implements ITokenBucket {
 	private _takenTokens?: NodeCache;
 
 	private _autoDropTimer?: SelfDisposingTimer<TokenBucket>;
+
+	private _cacheOrphaningWatcher?: SelfDisposingTimer<TokenBucket>;
 
 	private _isDisposed: boolean = false;
 
@@ -292,7 +345,12 @@ export class TokenBucket implements ITokenBucket {
 		}
 
 		this._autoDropTimer?.stop?.();
-		this._takenTokens?.close?.();
+
+		if (this._takenTokens) {
+			this._takenTokens.close();
+			unregisterCache(this);
+			this._cacheOrphaningWatcher!.orphaned.detach(onCacheOrphaned);
+		}
 
 		this._isDisposed = true;
 	}
@@ -316,6 +374,17 @@ export class TokenBucket implements ITokenBucket {
 			deleteOnExpire: true,
 			useClones: false
 		});
+
+		registerCache(this, this._takenTokens);
+
+		this._cacheOrphaningWatcher = new SelfDisposingTimer<TokenBucket>(
+			this,
+			() => { },
+			ORPHAN_CHECK_INTERVAL.Milliseconds,
+			true
+		);
+
+		this._cacheOrphaningWatcher.orphaned.attach(onCacheOrphaned);
 
 		if (this._config.behavior.refund.autoRefund?.enabled) {
 			this._takenTokens.on('expired', (_key: string, ticket: ITokensTicket) => {

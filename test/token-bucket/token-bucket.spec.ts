@@ -1,11 +1,36 @@
-import { sleep } from '../utils/sleep';
+import { sleep } from '../utils';
 import chai, { expect } from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import { Duration } from 'unitsnet-js';
 
 import { TokenBucket, OutOfTokensError, TokenBucketConfig } from '../../src';
+import { setOrphanCheckInterval, clearActiveCaches } from '../../src/core/token-bucket';
 
 chai.use(chaiAsPromised);
+
+
+describe('TokenBucket - Static Configuration and Components', () => {
+	it("Does not throw when calling 'setOrphanCheckInterval'", () => {
+		expect(() => setOrphanCheckInterval(Duration.FromMilliseconds(5))).to.not.throw();
+	});
+
+	it('Does not throw when a bucket is disposed but cache entry cannot be found', () => {
+		expect(() => {
+			const config: TokenBucketConfig = {
+				capacity: 100,
+				behavior: {
+					refund: {
+						enabled: true,
+						refundTicketsExpiry: Duration.FromMinutes(5),
+					}
+				}
+			};
+			const bucket = new TokenBucket(config);
+			clearActiveCaches();
+			bucket.dispose();
+		}).to.not.throw();
+	})
+});
 
 describe('TokenBucket - Construction', () => {
 	it('Throw a TypeError when created with an empty configuration', () => {
@@ -14,10 +39,7 @@ describe('TokenBucket - Construction', () => {
 	});
 
 	it('Does not throw when created with the most minimal configuration', () => {
-		const config: TokenBucketConfig = {
-			capacity: 100,
-		}
-
+		const config: TokenBucketConfig = { capacity: 100 };
 		expect(() => new TokenBucket(config).dispose()).to.not.throw();
 	});
 
