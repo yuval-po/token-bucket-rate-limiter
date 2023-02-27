@@ -1,48 +1,110 @@
 name: token-bucket-rate-limiter
 
+
 on:
   push:
+   paths-ignore:
+      - 'package.json'
+      - 'CHANGELOG.md'
+
+  pull_request:
+    branches:
+      - '*'
     paths-ignore:
       - 'package.json'
       - 'CHANGELOG.md'
 
+  pull_request_target:
+    branches:
+      - '*'
+    paths-ignore:
+      - 'package.json'
+      - 'CHANGELOG.md'
+
+
 jobs:
-  cover:
+
+  lint-and-test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         node-version: [14.6]
     steps:
-    - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Lint
+        run: yarn lint
+
+      - name: Test
+        run: yarn test
+
+      - name: Block merge on failure
+        if: ${{ github.event_name == 'pull_request' && (github.event.pull_request.base.ref == 'master' || github.event.pull_request.base.ref == 'develop') && (failure() || cancelled()) }}
+        uses: styfle/block@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          issue_number: ${{ github.event.pull_request.number }}
+
+
+  cover:
+    needs: lint-and-test
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [14.6]
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
     - name: Install node
       uses: actions/setup-node@v2
       with:
         node-version: ${{ matrix.node-version }}
-    - name: Unit-Tests
+
+    - name: Run Coverage
       run: |
         yarn install
         yarn run cover
+
     - name: Publish to Coveralls
       uses: coverallsapp/github-action@v1.1.2 
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
 
+
   build:
+    needs: lint-and-test
+
     runs-on: ubuntu-latest
     strategy:
       matrix:
         node-version: [14.6]
+
     steps:
-    - uses: actions/checkout@v2
-    - name: Install node
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Install Node
       uses: actions/setup-node@v2
       with:
         node-version: ${{ matrix.node-version }}
+
     - name: Build
       run: |
         yarn install
-        yarn lint
         yarn compile
+
 
   changelog:
     needs: build
