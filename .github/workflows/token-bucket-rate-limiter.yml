@@ -49,10 +49,26 @@ jobs:
 
       - name: Block merge on failure
         if: ${{ github.event_name == 'pull_request' && (github.event.pull_request.base.ref == 'master' || github.event.pull_request.base.ref == 'develop') && (failure() || cancelled()) }}
-        uses: styfle/block@v1
+        uses: actions/github-script@v3.3.2
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          issue_number: ${{ github.event.pull_request.number }}
+          script: |
+            const { context, github } = require('@actions/github');
+            const prNumber = context.payload.pull_request.number;
+            github.pulls.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber,
+              body: '## :x: Failed\nThis pull request cannot be merged until the Lint & Test steps are successful'
+            });
+            github.pulls.createReview({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber,
+              event: 'REQUEST_CHANGES',
+              body: 'This pull request cannot be merged until the Lint & Test steps are successful'
+            });
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 
   cover:
