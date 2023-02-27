@@ -52,7 +52,7 @@ The simplest form of usage is the imperative way- create a bucket instance and u
 
 This approach is useful when you require custom behaviors not available on the built-in Decorator and Middleware implementations.
 
-https://github.com/yuval-po/token-bucket-rate-limiter/blob/9cb1be79d539143251a2ec42f2a52034530c203e/examples/imperative/imperative.pseudo#L1-L8
+https://github.com/yuval-po/token-bucket-rate-limiter/blob/a2122f646c9732e6ed9b75a5246297e0ca52143c/examples/imperative/imperative.ts#L1-L8
 	
 </br>
 
@@ -60,7 +60,7 @@ https://github.com/yuval-po/token-bucket-rate-limiter/blob/9cb1be79d539143251a2e
 
 The decorator approach is useful for when you'd like to enforce limits on class methods. Prime examples would be a Controller or Service class.
 
-https://github.com/yuval-po/token-bucket-rate-limiter/blob/3242716ecb4f0f177b8853214d7fe588320e9266/examples/decorator/decorator.pseudo#L1-L20
+https://github.com/yuval-po/token-bucket-rate-limiter/blob/68d046cc681ffcdc99381f72fa94257f9fc56069/examples/decorator/decorator.ts#L1-L20
 
 </br>
 
@@ -70,7 +70,7 @@ _Express_ middleware-based limitation is also available. It is a rather flexible
 
 The middleware can also fulfil the role of a 'dumb' rate limiter by indiscriminantly routing all requests through it
 
-https://github.com/yuval-po/token-bucket-rate-limiter/blob/ba727e4884e3cfb83294bfa84929df5229418342/examples/middleware/middleware.pseudo#L1-L16
+https://github.com/yuval-po/token-bucket-rate-limiter/blob/68d046cc681ffcdc99381f72fa94257f9fc56069/examples/middleware/middleware.ts#L1-L16
 
 </br>
 
@@ -87,7 +87,7 @@ _Please note the following examples are actually pseudo-code, small errors may b
 
 The simplest configuration creates a bucket with a fixed capacity and no automatic drip:
 
-https://github.com/yuval-po/token-bucket-rate-limiter/blob/a9c9e9ba69d2d874c05a70ccf977d9de134149c7/examples/configuration/basic.pseudo#L1-L3
+https://github.com/yuval-po/token-bucket-rate-limiter/blob/68d046cc681ffcdc99381f72fa94257f9fc56069/examples/configuration/basic.ts#L1-L3
 
 ### Auto-Drip Configuration
 
@@ -95,7 +95,7 @@ A common use case for token buckets is to periodically add (drip) tokens to the 
 This can be accomplished using the `automaticDrip` configuration property:
 
 
-https://github.com/yuval-po/token-bucket-rate-limiter/blob/a9c9e9ba69d2d874c05a70ccf977d9de134149c7/examples/configuration/auto-drip.pseudo#L1-L13
+https://github.com/yuval-po/token-bucket-rate-limiter/blob/68d046cc681ffcdc99381f72fa94257f9fc56069/examples/configuration/auto-drip.ts#L1-L13
 
 
 In this example, the bucket will automatically add 5 tokens every 5 seconds.
@@ -112,7 +112,7 @@ While you don't want multiple such operations to run concurrently, you may want 
 
 The `refund `configuration property can be used to enable refunds:
 
-https://github.com/yuval-po/token-bucket-rate-limiter/blob/a9c9e9ba69d2d874c05a70ccf977d9de134149c7/examples/configuration/refund.pseudo#L1-L14
+https://github.com/yuval-po/token-bucket-rate-limiter/blob/68d046cc681ffcdc99381f72fa94257f9fc56069/examples/configuration/refund.ts#L1-L14
 
 In this example, the bucket is configured to allow refunds with a refund window of 30 minutes.
 
@@ -133,22 +133,34 @@ Auto-refund can mitigate this, to some degree by ensuring token tickets are even
 
 are granted for a limited time period and it is important to ensure that unused tokens are returned to the bucket even if the user forgets to manually refund them. The autoRefund configuration property can be used to enable auto-refunds:
 
-https://github.com/yuval-po/token-bucket-rate-limiter/blob/a9c9e9ba69d2d874c05a70ccf977d9de134149c7/examples/configuration/auto-refund.pseudo#L1-L17
+https://github.com/yuval-po/token-bucket-rate-limiter/blob/68d046cc681ffcdc99381f72fa94257f9fc56069/examples/configuration/auto-refund.ts#L1-L17
 
 In this example, the bucket is configured to allow refunds with a refund window of 30 minutes and auto-refunds of expired tokens enabled.
 
 </br>
 
-## Notes about proper usage
+## Misc Notes
 
 Here's a list of a few things (in no particular order) to keep in mind, when using the library.
 
-* Bucket objects are not 'free'; Each contains a dedicated internal cache and timers.
+* Bucket objects are not 'free'.  
+  Each contains a dedicated internal cache and timers.  
   They're not 'expensive' objects but keep in mind that if you intend to create them by the thousands (you shouldn't need to) the resources will probably add up.
 
-* Expanding on the previous point, buckets contain resources, such as timers, that must be freed.
+* Expanding on the previous point, buckets contain resources, such as timers, that must be freed.  
   While bucket and associated components are able to detect when they are no longer needed and free up those resources, you should still strive
   to call the bucket's `dispose` function to cleanly reclaim said resources.
+
+* The library is not designed for true multithreaded usage. If this scenario is of interest to you, please drop me a mail or contact me on GitHub.
+
+* The library is not meant for or tested on browsers. If you do end up somehow using it like that, please let me know!
+
+* This library uses [`weak-event`](https://www.npmjs.com/package/weak-event) (full disclosure, another library of mine) which requires `Node.js` version `>= 14.6`.  
+  While the parts of the library responsible for this requirements are not actually being used here,
+  I've elected to leave it as is. If this is a a blocker for you, consider letting me know- this limitation isn't set in stone.
+
+
+</br>
 
 
 ## Bucket Configuration Options Rundown
