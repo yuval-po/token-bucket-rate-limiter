@@ -63,6 +63,12 @@ https://github.com/yuval-po/token-bucket-rate-limiter/blob/a2122f646c9732e6ed9b7
 The decorator approach is useful for when you'd like to enforce limits on class methods.  
 A prime example would be a Controller or Service class.
 
+> __Please note:__ the built-in decorator implementation will attempt to automatically refund issued tokens.  
+
+> If the rate-limited method returns a Promise, the decorator will automatically refund the issued ticket once the Promise has resolved.  
+> If the method returns a non-Promise value, the decorator refunds the ticket immediately.  
+> The behavior of the decorator is dependent on the refund configuration of the bucket used for rate limiting.
+
 https://github.com/yuval-po/token-bucket-rate-limiter/blob/68d046cc681ffcdc99381f72fa94257f9fc56069/examples/decorator/decorator.ts#L1-L20
 
 </br>

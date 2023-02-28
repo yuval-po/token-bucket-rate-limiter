@@ -1,6 +1,19 @@
 import { randomFillSync } from 'crypto';
 import { ITokenBucket, ITokensTicket } from './interfaces';
 
+/**
+ * Represents a Tokens Ticket as obtained from a Tokens Bucket
+ *
+ * @description Tickets can be thought of as IOUs, specifying the the details of the 'transaction' such
+ * as the number of tokens taken, the bucket of origin and the ticket's expiration (when applicable)
+ *
+ * If the bucket that issued that ticket has been configured to support refunding, the ticket can also be 'refunded',
+ * During refunding, tokens are returned the the owning bucket (never exceeding the bucket's maximum)
+ *
+ * @export
+ * @class TokensTicket
+ * @implements {ITokensTicket}
+ */
 export class TokensTicket implements ITokensTicket {
 
 	//#region Members
@@ -43,6 +56,15 @@ export class TokensTicket implements ITokensTicket {
 
 	//#region Constructors
 
+	/**
+	 * Creates an instance of TokensTicket
+	 * @description This constructor is called by {@link ITokenBucket} instances when issuing tickets
+	 *
+	 * @param {ITokenBucket} source The bucket issuing the ticket
+	 * @param {number} count The number of tokens being issued
+	 * @param {Date} [expiryTime] The ticket's expiry date and time
+	 * @memberof TokensTicket
+	 */
 	public constructor(
 		source: ITokenBucket,
 		public readonly count: number,

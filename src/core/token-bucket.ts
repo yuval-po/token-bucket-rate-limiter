@@ -19,17 +19,25 @@ let ORPHAN_CHECK_INTERVAL: Duration = Duration.FromMinutes(2);
 * @description By default, each token bucket has a self-disposing-timer that monitors its state.
 * When the bucket is reclaimed by GC, the timer fires an event that closes the late bucket's cache to allow it to be GCed as well
 *
+* This is an ***INTERNAL FUNCTION*** and is not meant for external usage
+*
+* @internal
+*
 * @export
-* @param {Duration} duration
+* @param {Duration} interval The interval at which internal timers check for their own orphaning
 */
-export function setOrphanCheckInterval(duration: Duration): void {
-	ORPHAN_CHECK_INTERVAL = duration;
+export function setOrphanCheckInterval(interval: Duration): void {
+	ORPHAN_CHECK_INTERVAL = interval;
 }
 
 /**
  * Clears the active caches list
  *
- * This is a diagnostic feature for use with the unit tests; It's not meant for external use
+ * This is a diagnostic feature for use with the unit tests.
+ *
+ * This is an ***INTERNAL FUNCTION*** and is not meant for external usage
+ *
+ * @internal
  *
  * @export
  */

@@ -10,7 +10,10 @@
 export interface ITokensTicket {
 	/**
 	 * The name of the bucket that issues the ticket
+	 *
 	 * @default undefined
+	 * @type {string}
+	 * @memberof ITokensTicket
 	 */
 	readonly sourceBucketName?: string;
 
@@ -18,6 +21,7 @@ export interface ITokensTicket {
 	/**
 	 * The number of tokens issued
 	 *
+	 * @default undefined
 	 * @type {number}
 	 * @memberof ITokensTicket
 	 */
@@ -33,17 +37,61 @@ export interface ITokensTicket {
 	 */
 	readonly expiryTime?: Date;
 
+	/**
+	 * Gets the unique key that identifies this ticket
+	 *
+	 * @type {string}
+	 * @memberof ITokensTicket
+	 */
 	get key(): string;
 
+	/**
+	 * Gets the Date at which this ticket was issued
+	 *
+	 * @type {Date}
+	 * @memberof ITokensTicket
+	 */
 	get issueTime(): Date;
 
+	/**
+	 * Gets a boolean indicating whether this ticket has expired
+	 *
+	 * @type {boolean}
+	 * @memberof ITokensTicket
+	 */
 	get isExpired(): boolean;
 
+	/**
+	 * Gets a boolean indicating whether this ticket has been refunded
+	 *
+	 * @type {boolean}
+	 * @memberof ITokensTicket
+	 */
 	get wasRefunded(): boolean;
 
+	/**
+	 * Gets a boolean indicating whether this ticket is orphaned.
+	 *
+	 * @description A ticket is orphaned if it has no living owning bucket.
+	 * Orphaning occurs when a bucket goes out of scope
+	 *
+	 * @type {boolean}
+	 * @memberof ITokensTicket
+	 */
 	get isOrphaned(): boolean;
 
+	/**
+	 * Refunds this ticket and returns the tokens to the owning bucket
+	 *
+	 * @memberof ITokensTicket
+	 */
 	refund(): void;
 
+	/**
+	 * Creates a new ticket with the same properties as this one
+	 *
+	 * @returns {ITokensTicket}
+	 * @memberof ITokensTicket
+	 */
 	clone(): ITokensTicket;
 }
