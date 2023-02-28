@@ -11,7 +11,7 @@ A Token-Bucket Rate Limiter library for Node.js
 This library is a Token-Bucket-based rate-limiter, suitable for use in both route and code levels.
 It's designed to be lightweight, modern, concise, easy to use and flexible.
 
-Bucket based limiters are useful in managing load in resource constrained scenarios whilst providing pseudo _QOS_ capabilities.
+Bucket based limiters are useful in managing load in resource constrained scenarios whilst providing _QOS_-like capabilities.
 
 
 > Every server must decide,</br>
@@ -45,7 +45,9 @@ Please note that this package is __unbundled__
 
 ## Basic Usage
 
-_Please note the following examples are actually pseudo-code, small errors may be possible_
+_Please note the following examples are not linted or checked by the compiler, small errors may be possible_
+
+
 
 ### Imperative
 The simplest form of usage is the imperative way- create a bucket instance and use it directly.  
@@ -58,7 +60,8 @@ https://github.com/yuval-po/token-bucket-rate-limiter/blob/a2122f646c9732e6ed9b7
 
 ### Decorator
 
-The decorator approach is useful for when you'd like to enforce limits on class methods. Prime examples would be a Controller or Service class.
+The decorator approach is useful for when you'd like to enforce limits on class methods.  
+A prime example would be a Controller or Service class.
 
 https://github.com/yuval-po/token-bucket-rate-limiter/blob/68d046cc681ffcdc99381f72fa94257f9fc56069/examples/decorator/decorator.ts#L1-L20
 
@@ -66,7 +69,7 @@ https://github.com/yuval-po/token-bucket-rate-limiter/blob/68d046cc681ffcdc99381
 
 ### Middleware
 
-_Express_ middleware-based limitation is also available. It is a rather flexible approach as it can be specific or general depending on its position in the middleware stack.
+_Express_ middleware-based limitation is also available. It is a rather flexible approach as it can be specific or generic depending on its position in the middleware stack.
 
 The middleware can also fulfil the role of a 'dumb' rate limiter by indiscriminantly routing all requests through it
 
@@ -80,7 +83,10 @@ The bucket's core is designed to be flexible enough to support most common use-c
 Below are some example configurations that can be used to customize its behavior.
 
 
-_Please note the following examples are actually pseudo-code, small errors may be possible_
+_Please note the following examples are not linted or checked by the compiler, small errors may be possible_
+
+
+</br>
 
 
 ### Basic Configuration
@@ -88,6 +94,10 @@ _Please note the following examples are actually pseudo-code, small errors may b
 The simplest configuration creates a bucket with a fixed capacity and no automatic drip:
 
 https://github.com/yuval-po/token-bucket-rate-limiter/blob/68d046cc681ffcdc99381f72fa94257f9fc56069/examples/configuration/basic.ts#L1-L3
+
+
+</br>
+
 
 ### Auto-Drip Configuration
 
@@ -99,6 +109,9 @@ https://github.com/yuval-po/token-bucket-rate-limiter/blob/68d046cc681ffcdc99381
 
 
 In this example, the bucket will automatically add 5 tokens every 5 seconds.
+
+
+</br>
 
 
 ## Refund Configuration
@@ -117,6 +130,9 @@ https://github.com/yuval-po/token-bucket-rate-limiter/blob/68d046cc681ffcdc99381
 In this example, the bucket is configured to allow refunds with a refund window of 30 minutes.
 
 
+</br>
+
+
 ## Auto-Refund Configuration
 
 Token buckets can also be configured to automatically refund expired tokens. This can be useful in situations where the 'tail end' of operations is not fully visible, for lack of a better term.
@@ -129,9 +145,8 @@ Auto-refund is the latter, where you may state that an operation that takes more
 
 Another possible (though somewhat dubious) use for this mechanism is to safeguard against developer errors. If a developer makes a mistake and an operation that should refund itself (i.e. call `ITokenTicket.refund()`) does not do so, you can experience rapid capacity loss.
 
-Auto-refund can mitigate this, to some degree by ensuring token tickets are eventually reclaimed.
+The `autoRefund` configuration property  can mitigate this, to some degree by ensuring token tickets are eventually reclaimed:
 
-are granted for a limited time period and it is important to ensure that unused tokens are returned to the bucket even if the user forgets to manually refund them. The autoRefund configuration property can be used to enable auto-refunds:
 
 https://github.com/yuval-po/token-bucket-rate-limiter/blob/68d046cc681ffcdc99381f72fa94257f9fc56069/examples/configuration/auto-refund.ts#L1-L17
 
@@ -139,7 +154,7 @@ In this example, the bucket is configured to allow refunds with a refund window 
 
 </br>
 
-## Misc Notes
+## Misc Usage Notes
 
 Here's a list of a few things (in no particular order) to keep in mind, when using the library.
 
@@ -147,8 +162,8 @@ Here's a list of a few things (in no particular order) to keep in mind, when usi
   Each contains a dedicated internal cache and timers.  
   They're not 'expensive' objects but keep in mind that if you intend to create them by the thousands (you shouldn't need to) the resources will probably add up.
 
-* Expanding on the previous point, buckets contain resources, such as timers, that must be freed.  
-  While bucket and associated components are able to detect when they are no longer needed and free up those resources, you should still strive
+* Expanding upon the previous point, buckets contain resources, such as timers, that must be freed.  
+  While the bucket and associated components are able to detect when they are no longer needed and free up those resources, you should still strive
   to call the bucket's `dispose` function to cleanly reclaim said resources.
 
 * The library is not designed for true multithreaded usage. If this scenario is of interest to you, please drop me a mail or contact me on GitHub.
