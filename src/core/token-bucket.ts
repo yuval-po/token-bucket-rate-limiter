@@ -26,16 +26,57 @@ export function setOrphanCheckInterval(duration: Duration): void {
 	ORPHAN_CHECK_INTERVAL = duration;
 }
 
+/**
+ * Clears the active caches list
+ *
+ * This is a diagnostic feature for use with the unit tests; It's not meant for external use
+ *
+ * @export
+ */
 export function clearActiveCaches(): void {
 	ACTIVE_CACHES.splice(0, ACTIVE_CACHES.length);
 }
 
 //#endregion Internal Testing/Diagnostics
 
+/**
+ * A word about the cache orphaning checker;
+ * This part is not ideal. It would be preferable if we had a single resource manager that could
+ * handle both caches and token timers as well as whatever other leak-able resources we may add in the future.
+ *
+ * That being said, I've elected to *not* use a global timer for the purpose of orphan checking, instead relying
+ * on self-disposing-timers held by each bucket.
+ *
+ * A global timer would have been easier to implement but would also likely hold an app alive even when it should've gracefully exited.
+ *
+ */
+
+/**
+ * Registers a cache in the active cache list
+ *
+ * @description The active cache list keeps track of node-caches being held by token buckets.
+ * When a bucket goes out of scope, the orphaning detection kicks in and calls the unregister function
+ * which finds and closes the cache (though not necessarily the same one. More on that in {@link unregisterCache})
+ *
+ * @param {ITokenBucket} owner The bucket owning the cache
+ * @param {NodeCache} cache The cache being registered
+ */
 function registerCache(owner: ITokenBucket, cache: NodeCache): void {
 	ACTIVE_CACHES.push({ cache, owner: new WeakRef(owner) });
 }
 
+/**
+ * Un-registers the node-cache held by the given owner
+ *
+ * @description This method is called by the bucket to immediatly remove its cache from the active cache list.
+ * This is done during bucket disposal.
+ *
+ * Notice- the responsibility for calling {@link NodeCache.close} lies with the bucket.
+ * This method simply removes the cache from the watch list
+ *
+ * @param {ITokenBucket} owner The bucket owner of the cache to unregister
+ * @return {*}  {void}
+ */
 function unregisterCache(owner: ITokenBucket): void {
 	const cacheIndex = ACTIVE_CACHES.findIndex((cache) => cache.owner.deref() === owner);
 	if (cacheIndex < 0) {
@@ -45,6 +86,22 @@ function unregisterCache(owner: ITokenBucket): void {
 	ACTIVE_CACHES.splice(cacheIndex, 1);
 }
 
+/**
+ * A callback function used to handle cases of cache orphaning
+ *
+ * @description Token bucket, due to improper use may go out of scope without being properly disposed of.
+ * When that happens, the orphaning detection mechanisms kick in and after a certain amount of time, the system will detect
+ * that resources have been leaked and must be reclaimed.
+ *
+ * This function handles closure of NodeCaches held by buckets, thereby allowing subsequent reclamation by the GC
+ *
+ * Note that this function looks for the **first** orphaned cache in the list, not necessarily the one who's parent's demise
+ * raised the event in the first place.
+ * In the long run, this doesn't matter much since orphaned caches are all treated the same way.
+ *
+ * @param {SelfDisposingTimer<TokenBucket>} sender
+ * @return {*}  {void}
+ */
 function onCacheOrphaned(sender: SelfDisposingTimer<TokenBucket>): void {
 	const cacheIndex = ACTIVE_CACHES.findIndex((cache) => cache.owner.deref() === undefined);
 	if (cacheIndex < 0) {
