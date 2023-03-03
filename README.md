@@ -42,8 +42,6 @@ Short poem by _ChatGPT_
 
 ## Basic Usage
 
-_Please note the following examples are not linted or checked by the compiler, small errors may be possible_
-
 
 
 ### Imperative
@@ -84,9 +82,6 @@ https://github.com/yuval-po/token-bucket-rate-limiter/blob/68d046cc681ffcdc99381
 
 The bucket's core is designed to be flexible enough to support most common use-cases.
 Below are some example configurations that can be used to customize its behavior.
-
-
-_Please note the following examples are not linted or checked by the compiler, small errors may be possible_
 
 
 </br>
