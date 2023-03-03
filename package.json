@@ -2,7 +2,7 @@
   "name": "token-bucket-rate-limiter",
   "version": "1.1.6",
   "private": false,
-  "license": "ISC",
+  "license": "MIT",
   "author": {
     "name": "yuval-po",
     "url": "https://github.com/yuval-po"
@@ -17,6 +17,7 @@
     "ratelimit",
     "rate-limit",
     "Throttling",
+	"Bucket",
     "Token-Bucket",
     "Token Bucket",
     "Node.js",
