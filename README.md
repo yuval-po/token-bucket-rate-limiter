@@ -66,7 +66,7 @@ A prime example would be a Controller or Service class.
 > If the method returns a non-Promise value, the decorator refunds the ticket immediately.  
 > The behavior of the decorator is dependent on the refund configuration of the bucket used for rate limiting.
 
-https://github.com/yuval-po/token-bucket-rate-limiter/blob/68d046cc681ffcdc99381f72fa94257f9fc56069/examples/decorator/decorator.ts#L1-L20
+https://github.com/yuval-po/token-bucket-rate-limiter/blob/1c7236d2afaad4831e407b3c49b4f3e06dfed18d/examples/decorator/decorator.ts#L1-L21
 
 </br>
 
