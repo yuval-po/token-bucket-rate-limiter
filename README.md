@@ -31,15 +31,12 @@ Short poem by _ChatGPT_
 > This library makes no attempt to support multithreaded scenarios.  
 > The rate limiter implementation is ***not*** thread safe.
 
+</br>
 
 ### Installation
 
 * npm install token-bucket-rate-limiter
 * yarn add token-bucket-rate-limiter
-
-</br>
-
-Please note that this package is __unbundled__
 
 </br>
 
@@ -180,6 +177,7 @@ Here's a list of a few things (in no particular order) to keep in mind, when usi
   While the parts of the library responsible for this requirements are not actually being used here,
   I've elected to leave it as is. If this is a a blocker for you, consider letting me know- this limitation isn't set in stone.
 
+* This package comes __unbundled__. There are no funky imports or any unusual tricks here so you can use it as-is or feed it to your bundler of choice.
 
 </br>
 
